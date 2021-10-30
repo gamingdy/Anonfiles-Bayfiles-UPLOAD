@@ -2,6 +2,10 @@ import requests
 import os
 
 
+class Error(BaseException):
+    pass
+
+
 class Anonfiles:
     def __init__(self):
         self.based_url = "https://api.anonfiles.com/upload"
@@ -14,11 +18,6 @@ class Anonfiles:
 
         if r["status"]:
             file = r["data"]["file"]
-            final_file = {}
-            final_file["url"] = file["url"]
-            final_file["name"] = file["metadata"]["name"]
-            final_file["size"] = file["metadata"]["size"]
-
             final_file = {
                 "url": file["url"],
                 "name": file["metadata"]["name"],
@@ -27,4 +26,6 @@ class Anonfiles:
 
             return final_file
         else:
-            pass
+            r_error = r["error"]
+            error_message = f"{r_error['type']} : {r_error['message']}"
+            raise Error(error_message)
