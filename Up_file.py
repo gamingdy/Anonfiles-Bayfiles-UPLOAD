@@ -11,6 +11,11 @@ class UploadFile:
         self.based_url = url
 
     def upload(self, filepath):
+        """
+        Upload files on Anonfiles or Bayfiles, with a Size limit to 5 Go/Gb by files.
+        You must be specified files path(relative or absolute)
+        """
+
         with open(filepath, "rb") as a_file:
             filename = os.path.basename(filepath)
             _files = {"file": (filename, a_file)}
@@ -28,10 +33,18 @@ class UploadFile:
 
 
 class Anonfiles(UploadFile):
+    """
+    This class allow you upload files to Anonfiles using the Anonfiles API
+    """
+
     def __init__(self):
         UploadFile.__init__(self, "https://api.anonfiles.com/upload")
 
 
 class Bayfiles(UploadFile):
+    """
+    This class allow you upload files to Bayfiles using the Bayfiles API
+    """
+
     def __init__(self):
         UploadFile.__init__(self, "https://api.bayfiles.com/upload")
