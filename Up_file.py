@@ -7,8 +7,25 @@ class Error(BaseException):
 
 
 class UploadFile:
-    def __init__(self, url):
+    def __init__(self, url, get_url):
         self.based_url = url
+        self.file_url = get_url
+
+    def _data(self, request_result):
+
+        if request_result["status"]:
+
+            file = request_result["data"]["file"]
+            final_file = {"url": file["url"], "metadata": file["metadata"]}
+
+            return final_file
+
+        else:
+
+            r_error = request_result["error"]
+            error_message = f"{r_error['type']} : {r_error['message']}"
+
+            raise Error(error_message)
 
     def upload(self, filepath):
         """
@@ -20,6 +37,11 @@ class UploadFile:
             filename = os.path.basename(filepath)
             _files = {"file": (filename, a_file)}
             r = requests.post(self.based_url, files=_files).json()
+
+        return _data(r)
+
+    def get_file(self, file_id):
+        r = requests.get(f"{self.file_url}/{file_id}/info").json()
 
         if r["status"]:
             file = r["data"]["file"]
@@ -38,7 +60,9 @@ class Anonfiles(UploadFile):
     """
 
     def __init__(self):
-        UploadFile.__init__(self, "https://api.anonfiles.com/upload")
+        base_url = "https://api.anonfiles.com/upload"
+        get_file_url = "https://api.anonfiles.com/v2/file"
+        UploadFile.__init__(self, base_url, get_file_url)
 
 
 class Bayfiles(UploadFile):
@@ -47,4 +71,6 @@ class Bayfiles(UploadFile):
     """
 
     def __init__(self):
-        UploadFile.__init__(self, "https://api.bayfiles.com/upload")
+        base_url = "https://api.bayfiles.com/upload"
+        get_file_url = "https://api.bayfiles.com/v2/file"
+        UploadFile.__init__(self, base_url, get_file_url)
